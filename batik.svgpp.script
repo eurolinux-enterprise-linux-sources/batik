@@ -23,7 +23,7 @@ fi
 
 # Configuration
 MAIN_CLASS=org.apache.batik.apps.svgpp.Main
-BASE_JARS="batik-svgpp.jar"
+BASE_JARS="batik-svgpp.jar batik/batik-transcoder batik/batik-util batik/batik-xml"
 
 # Set parameters
 set_jvm

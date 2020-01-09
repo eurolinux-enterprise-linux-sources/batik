@@ -1,6 +1,8 @@
+%global debug_package %{nil}
+
 Name:           batik
 Version:        1.7
-Release:        6.3%{?dist}
+Release:        8.5%{?dist}
 Summary:        Scalable Vector Graphics for Java
 License:        ASL 2.0
 URL:            http://xml.apache.org/batik/
@@ -16,6 +18,7 @@ Source7:       %{name}-repack.sh
 Source8:        %{name}-orbit-manifests.tar.gz
 Patch0:         %{name}-manifests.patch
 Patch1:         %{name}-policy.patch
+Patch2:         %{name}-require-bundle-version.patch
 Requires:       rhino >= 1.5
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -104,6 +107,9 @@ Batik SVG slideshow.
 %package        javadoc
 Summary:        Javadoc for %{name}
 Group:          Documentation
+BuildArch:      noarch
+# Obsolete arch-specific packages because of migration to noarch
+Obsoletes:      %{name}-javadoc < %{version}-%{release}
 
 %description    javadoc
 Javadoc for %{name}.
@@ -126,6 +132,7 @@ rm -f `find -name properties`
 mkdir orbit
 pushd orbit
 tar xzf %{SOURCE8}
+%patch2 -p1
 popd
 
 
@@ -298,6 +305,30 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug 02 2013 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.7-8.5
+- Fix slideshow and svgpp script classpaths
+- Resolves: rhbz#995471
+
+* Tue Jul 30 2013 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.7-7.5
+- Fix classpath of ttf2svg script
+- Resolves: rhbz#979527
+
+* Thu Apr 25 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.7-6.5
+- Make javadoc package noarch to fix multilib problems
+- Resolves: rhbz#956662
+
+* Tue Apr 23 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.7-6.4
+- Disable debuginfo package
+- Resolves: rhbz#631677
+
+* Mon Apr 22 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.7-6.4
+- Add xml-commons-apis-ext.jar to rasterizer classpath
+- Resolves: rhbz#867701
+
+* Wed Dec  5 2012 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.7-6.4
+- Fix bundle-version attributes in Require-Bundle manifest headers
+- Resolves: rhbz#883464
+
 * Tue Jun 01 2010 Deepak Bhole <dbhole@redhat.com> 1.7-6.3
 - Make builds x86/x86_64 only for RHEL6
 
