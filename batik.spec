@@ -1,6 +1,6 @@
 Name:           batik
 Version:        1.8
-Release:        0.12.svn1230816%{?dist}
+Release:        0.9.svn1230816%{?dist}
 Summary:        Scalable Vector Graphics for Java
 License:        ASL 2.0 and W3C
 URL:            http://xml.apache.org/batik/
@@ -40,11 +40,6 @@ Patch2:		%{name}-script-remove-js.patch
 # FIXME:  move to 1.7 manifest from Eclipse Orbit project
 Patch3:         %{name}-1.6-nosmilInDOMSVGManifest.patch
 Requires:       rhino >= 1.5
-
-# make sure we fail build if javadocs fail (run OOM)
-# also make maxmem a bit higher. we seem to need more...
-# https://issues.apache.org/jira/browse/BATIK-1065
-Patch4:         %{name}-javadoc-task-failonerror-and-oom.patch
 
 BuildArch:      noarch
 
@@ -173,8 +168,6 @@ for module in anim awt-util bridge codec css dom ext extension gui-util \
       	  > %{name}-$module.pom
 done
 %patch2
-
-%patch4
 
 %build
 export CLASSPATH=$(build-classpath xml-commons-apis xml-commons-apis-ext js rhino xalan-j2 xalan-j2-serializer xerces-j2)
@@ -329,17 +322,6 @@ chmod +x $RPM_BUILD_ROOT%{_datadir}/%{name}/contrib/charts/convert.sh
 
 
 %changelog
-* Fri Jan 17 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.8-0.12.svn1230816
-- Change javadoc task maxmem to 512MB to avoid OOM
-- Resolves: rhbz#1054202
-
-* Wed Jan 15 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.8-0.11.svn1230816
-- Fix classpath for slideshow script
-- Resolves: rhbz#995472
-
-* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.8-0.10.svn1230816
-- Mass rebuild 2013-12-27
-
 * Thu Nov 07 2013 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.8-0.9.svn1230816
 - Use add_maven_depmap instead of deprecated
 - Resolves: rhbz#1027847
