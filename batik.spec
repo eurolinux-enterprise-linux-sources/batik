@@ -2,7 +2,7 @@
 
 Name:           batik
 Version:        1.7
-Release:        8.5%{?dist}
+Release:        10%{?dist}
 Summary:        Scalable Vector Graphics for Java
 License:        ASL 2.0
 URL:            http://xml.apache.org/batik/
@@ -19,14 +19,19 @@ Source8:        %{name}-orbit-manifests.tar.gz
 Patch0:         %{name}-manifests.patch
 Patch1:         %{name}-policy.patch
 Patch2:         %{name}-require-bundle-version.patch
+Patch3:         %{name}-fix-javadoc-build.patch
+Patch4:         %{name}-port-jpeg-manipulation-to-imageio.patch
+Patch5:         %{name}-add-stubs-for-sun-jpeg-codec.patch
+Patch6:         %{name}-add-testcases-for-codecs.patch
 Requires:       rhino >= 1.5
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  java-1.6.0-openjdk-devel >= 1:1.6.0.0
+BuildRequires:  java-1.6.0-openjdk-devel >= 1:1.6.0
 BuildRequires:  jpackage-utils >= 1.5
 BuildRequires:  ant
 BuildRequires:  ant-trax
+BuildRequires:  junit
 BuildRequires:  subversion
 
 BuildRequires:  jython
@@ -38,7 +43,7 @@ BuildRequires:  xml-commons-apis >= 1.3.04
 BuildRequires:  java-1.6.0-openjdk-javadoc
 BuildRequires:  rhino-javadoc
 
-Requires:       java-1.6.0-openjdk >= 1:1.6.0.0
+Requires:       java >= 1:1.6.0
 Requires:       rhino >= 1.5
 Requires:       xml-commons-apis >= 1.3.04
 
@@ -127,6 +132,10 @@ Demonstrations and samples for %{name}.
 %setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 rm -f `find -name readOnly.png`
 rm -f `find -name properties`
 mkdir orbit
@@ -144,7 +153,8 @@ export CLASSPATH=$CLASSPATH:/usr/share/java/js.jar
 export CLASSPATH=$CLASSPATH:/usr/share/java/rhino.jar
 export CLASSPATH=$CLASSPATH:/usr/share/java/xalan-j2.jar
 export CLASSPATH=$CLASSPATH:/usr/share/java/xerces-j2.jar
-ant all-jar jars\
+export CLASSPATH=$CLASSPATH:/usr/share/java/junit.jar
+ant all-jar jars \
 	-Ddebug=on \
         -Dsun-codecs.present=false \
         -Dsun-codecs.disabled=true \
@@ -152,7 +162,11 @@ ant all-jar jars\
         svg-slideshow-jar \
         squiggle-jar \
         rasterizer-jar \
-        ttf2svg-jar
+        ttf2svg-jar \
+        compiletest
+
+java -cp `build-classpath junit`:classes junit.textui.TestRunner org.apache.batik.ext.awt.image.codec.jpeg.JPEGImageWriterTest
+java -cp `build-classpath junit`:classes junit.textui.TestRunner org.apache.batik.ext.awt.image.codec.tiff.TIFFImageDecoderTest
 
 for j in $(find batik-%{version} -name *.jar); do
  export CLASSPATH=$CLASSPATH:${j}
@@ -305,6 +319,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 11 2016 Michael Simacek <msimacek@redhat.com> - 1.7-10
+- Make sure that test classes don't end up in jars
+
+* Fri Nov 20 2015 Michael Simacek <msimacek@redhat.com> - 1.7-9
+- Replace usages of sun's jpeg codecs with imageio when possible
+- Provide stubs for cases when it's not
+
 * Fri Aug 02 2013 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.7-8.5
 - Fix slideshow and svgpp script classpaths
 - Resolves: rhbz#995471
