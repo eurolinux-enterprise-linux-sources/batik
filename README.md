@@ -1,3 +1,4 @@
-# ELS - Enterprise Linux/EuroLinux Sources - batik 
+# ELS - Enterprise Linux/EuroLinux Sources - batik
+ 
 ## Usage:
   Checkout branch or tag.
